@@ -172,6 +172,34 @@ input[type=range] { accent-color: var(--accent); }
 .warn-item { font-size: 12px; color: #ffe6a8; }
 .disclaimer { font-size: 11px; color: var(--muted); margin-top: 14px; line-height: 1.5; font-style: italic; }
 
+/* ---- Repercussão e estruturas nos achados ---- */
+.finding .reperc { color: #e7c9c4; margin-top: 5px; }
+.finding .estr { color: var(--muted); margin-top: 4px; font-size: 11.5px; }
+.finding .reperc b, .finding .estr b { color: #ffb3aa; font-weight: 600; }
+
+.sub { font-size: 12px; color: var(--muted); margin: -6px 0 12px; }
+
+.heart-tools { display: flex; align-items: center; gap: 12px; }
+.mini-btn {
+  background: rgba(255,255,255,0.06); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px;
+  font-size: 12px; cursor: pointer;
+}
+.mini-btn:hover { background: rgba(255,90,77,0.15); }
+.mini-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.dot.ischemic { background: #6b1414; box-shadow: 0 0 6px #ff3b3b; }
+
+/* ---- Grade de estruturas cardíacas ---- */
+.structures { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 14px; }
+.struct { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border-radius: 8px; }
+.struct .sdot { width: 9px; height: 9px; border-radius: 50%; margin-top: 4px; flex: 0 0 auto; }
+.struct.ok .sdot { background: var(--ok); }
+.struct.alt { background: rgba(255,90,77,0.08); }
+.struct.alt .sdot { background: var(--crit); box-shadow: 0 0 6px rgba(255,90,90,0.8); }
+.struct .sname { display: block; font-size: 12.5px; font-weight: 500; }
+.struct .sstate { display: block; font-size: 11px; color: var(--muted); }
+.struct.alt .sstate { color: #ff9a9a; }
+
 /* ---- Responsivo ---- */
 @media (max-width: 1000px) {
   .layout { grid-template-columns: 1fr; }

@@ -23,15 +23,23 @@ sincronizado ao ritmo detectado no exame.
    variabilidade RR e contagem de batimentos.
 4. **Interpretação** — classificação de ritmo (sinusal, bradicardia, taquicardia,
    fibrilação atrial, extrassístoles, supra de ST…) e achados com nível de
-   severidade (OK / Atenção / Crítico).
-5. **Molde cardíaco 3D animado** — coração de 4 câmaras + grandes vasos + sistema
-   de condução que **bate no tempo do ECG**:
-   - onda **P** → contração dos **átrios**;
-   - complexo **QRS** → contração dos **ventrículos**;
-   - marcador luminoso percorre a via **nó SA → nó AV → feixe de His → Purkinje**.
+   severidade (OK / Atenção / Crítico). Cada achado traz a sua **repercussão
+   clínica** e as **estruturas cardíacas envolvidas**, além de uma **análise
+   combinada** que correlaciona os achados e descreve a repercussão global.
+5. **Molde cardíaco 3D animado** — coração completo (4 câmaras + septo + 4 valvas
+   + grandes vasos + sistema de condução: nó SA, nó AV, feixe de His, ramos e
+   Purkinje) que **bate no tempo do ECG** e **demonstra a alteração** sobre a
+   estrutura correspondente:
+   - onda **P** → contração dos **átrios** (ou fibrilação, na FA);
+   - complexo **QRS** → contração dos **ventrículos** (assíncrona no bloqueio de ramo);
+   - marcador luminoso percorre **nó SA → nó AV → feixe de His → Purkinje**;
+   - **supra de ST** → parede do ventrículo esquerdo destacada (região em sofrimento);
+   - **rótulos** opcionais nomeiam cada estrutura sobre o modelo.
 
-Toda a análise técnica aparece integrada à estrutura visual (tabela de medidas,
-lista de achados, impressão diagnóstica e cursor de reprodução sobre o traçado).
+Toda a análise técnica aparece integrada à estrutura visual: tabela completa de
+medidas, achados com repercussão, análise combinada, painel com o **estado de
+todas as estruturas cardíacas** (normais x alteradas) e cursor de reprodução
+sobre o traçado.
 
 ---
 

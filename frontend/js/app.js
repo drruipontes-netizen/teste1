@@ -63,6 +63,14 @@ function wireControls() {
     b.addEventListener('click', () => loadDemo(b.dataset.demo));
   });
 
+  // Alternar rótulos das estruturas no modelo 3D.
+  let labelsOn = false;
+  el('toggle-labels').addEventListener('click', () => {
+    labelsOn = !labelsOn;
+    heart.setLabels(labelsOn);
+    el('toggle-labels').classList.toggle('active', labelsOn);
+  });
+
   // Upload por clique e arrastar-soltar.
   const drop = el('dropzone');
   const input = el('file-input');
@@ -166,19 +174,32 @@ function renderInterpretation(an, it, meta) {
     measures.innerHTML = `<tr><td colspan="4">${an.reason || 'Sem medidas.'}</td></tr>`;
   }
 
-  // Lista de achados com severidade.
+  // Lista de achados com severidade + repercussão + estruturas envolvidas.
   const findings = el('findings');
   findings.innerHTML = '';
+  const structNames = (an.ok || it.structures) ? (it.structures || {}) : {};
   for (const f of it.achados) {
     const li = document.createElement('li');
     li.className = `finding sev-${f.severidade}`;
+    const estruturas = (f.estruturas || [])
+      .map((k) => (it.structures?.[k]?.nome) || k)
+      .join(', ');
     li.innerHTML = `<span class="badge">${sevLabel(f.severidade)}</span>
-      <div><strong>${f.titulo}</strong><p>${f.detalhe}</p></div>`;
+      <div>
+        <strong>${f.titulo}</strong>
+        <p>${f.detalhe}</p>
+        ${f.repercussao ? `<p class="reperc"><b>Repercussão:</b> ${f.repercussao}</p>` : ''}
+        ${estruturas ? `<p class="estr"><b>Estruturas:</b> ${estruturas}</p>` : ''}
+      </div>`;
     findings.appendChild(li);
   }
 
-  // Impressão diagnóstica.
+  // Análise combinada + impressão diagnóstica.
+  el('combined').textContent = it.analise_combinada || '';
   el('impression').textContent = it.impressao;
+
+  // Painel de estado de todas as estruturas cardíacas.
+  renderStructures(it.structures || {});
 
   // Avisos de digitalização + confiança.
   const warns = el('warnings');
@@ -201,6 +222,23 @@ function renderInterpretation(an, it, meta) {
   el('disclaimer').textContent = it.disclaimer || '';
 }
 
+// Renderiza o estado de todas as estruturas cardíacas.
+function renderStructures(structures) {
+  const box = el('structures');
+  box.innerHTML = '';
+  const entries = Object.values(structures);
+  if (!entries.length) { box.innerHTML = '<p class="sub">Sem dados.</p>'; return; }
+  for (const s of entries) {
+    const alterada = s.estado && s.estado !== 'normal';
+    const div = document.createElement('div');
+    div.className = `struct ${alterada ? 'alt' : 'ok'}`;
+    div.innerHTML = `<i class="sdot"></i>
+      <div><span class="sname">${s.nome}</span>
+      <span class="sstate">${alterada ? (s.obs || s.estado) : 'normal'}</span></div>`;
+    box.appendChild(div);
+  }
+}
+
 // ----- Utilidades de formatação -----
 function fmt(v, unit) { return (v === null || v === undefined) ? '—' : `${v} ${unit}`; }
 function sevLabel(s) { return { info: 'OK', atencao: 'Atenção', critico: 'Crítico' }[s] || s; }
@@ -217,8 +255,9 @@ function refFC(v) {
   return { text: 'normal', kind: 'flag-ok' };
 }
 function refST(v) {
-  if (v > 0.1) return { text: '↑ supra', kind: 'flag-crit' };
-  if (v < -0.1) return { text: '↓ infra', kind: 'flag-warn' };
+  if (v > 0.12) return { text: '↑ supra', kind: 'flag-crit' };
+  if (v < -0.12) return { text: '↓ infra', kind: 'flag-warn' };
+  if (Math.abs(v) > 0.08) return { text: 'limítrofe', kind: 'flag-warn' };
   return { text: 'normal', kind: 'flag-ok' };
 }
 

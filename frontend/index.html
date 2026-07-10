@@ -83,23 +83,35 @@
       <div class="panel heart-panel">
         <div class="heart-head">
           <h2>Molde cardíaco 3D</h2>
-          <span class="hint">arraste para girar · role para aproximar</span>
+          <div class="heart-tools">
+            <button id="toggle-labels" class="mini-btn">🏷 Rótulos</button>
+            <span class="hint">arraste para girar · role para aproximar</span>
+          </div>
         </div>
         <div id="heart-canvas" class="heart-canvas"></div>
         <div class="legend">
           <span><i class="dot atria"></i> Átrios (onda P)</span>
           <span><i class="dot ventricle"></i> Ventrículos (QRS)</span>
-          <span><i class="dot spark"></i> Via de condução</span>
+          <span><i class="dot spark"></i> Condução (SA→AV→His→Purkinje)</span>
+          <span><i class="dot ischemic"></i> Região em sofrimento</span>
         </div>
       </div>
 
       <div class="panel">
         <h2 id="rhythm-title" class="rhythm">—</h2>
         <ul id="findings" class="findings"></ul>
+        <h3>Análise combinada e repercussão</h3>
+        <p id="combined" class="impression"></p>
         <h3>Impressão diagnóstica</h3>
         <p id="impression" class="impression"></p>
         <div id="warnings" class="warnings"></div>
         <p id="disclaimer" class="disclaimer"></p>
+      </div>
+
+      <div class="panel">
+        <h2>Estruturas cardíacas</h2>
+        <p class="sub">Estado de cada estrutura conforme a análise. As alteradas aparecem destacadas no modelo 3D.</p>
+        <div id="structures" class="structures"></div>
       </div>
     </section>
   </main>
