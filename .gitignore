@@ -1,0 +1,16 @@
+# Node (usado apenas em testes/dev — o frontend usa three.js vendorizado)
+node_modules/
+package.json
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Ferramentas / temporários
+scratch_*
+*.log
+.DS_Store

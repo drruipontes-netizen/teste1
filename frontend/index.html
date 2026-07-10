@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardio3D — Interpretação de ECG em Molde Cardíaco 3D</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫀</text></svg>" />
+  <!-- three.js empacotado localmente: o app funciona 100% offline. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🫀</span>
+      <div>
+        <h1>Cardio3D</h1>
+        <p>Interpretação de ECG · Molde Cardíaco 3D em Movimento</p>
+      </div>
+    </div>
+    <div id="status" class="status info">Iniciando…</div>
+  </header>
+
+  <main class="layout">
+    <!-- Coluna esquerda: entrada + ECG + laudo -->
+    <section class="col left">
+      <div class="panel">
+        <h2>1 · Enviar ECG (foto ou PDF)</h2>
+        <div id="dropzone" class="dropzone">
+          <input id="file-input" type="file" accept="image/*,application/pdf" hidden />
+          <div class="dz-inner">
+            <span class="dz-icon">📄</span>
+            <p><strong>Clique</strong> ou arraste uma foto/PDF do eletrocardiograma</p>
+            <small>JPG, PNG ou PDF · até 20 MB</small>
+          </div>
+        </div>
+        <div class="demo-row">
+          <span>ou experimente um ritmo:</span>
+          <button data-demo="sinus" class="chip-btn">Sinusal normal</button>
+          <button data-demo="bradycardia" class="chip-btn">Bradicardia</button>
+          <button data-demo="tachycardia" class="chip-btn">Taquicardia</button>
+          <button data-demo="afib" class="chip-btn">Fibrilação atrial</button>
+          <button data-demo="pvc" class="chip-btn">Extrassístoles</button>
+          <button data-demo="st_elevation" class="chip-btn">Supra de ST</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>2 · Traçado digitalizado</h2>
+        <div class="ecg-wrap">
+          <canvas id="ecg-canvas"></canvas>
+        </div>
+        <div class="playback">
+          <button id="play-pause" class="btn">⏸ Pausar</button>
+          <label>Velocidade
+            <input id="speed" type="range" min="0.25" max="2" step="0.25" value="1" />
+            <span id="speed-val">1.0×</span>
+          </label>
+          <span id="time-readout" class="readout">0.0s / 10.0s</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>3 · Análise técnica</h2>
+        <table class="measures">
+          <thead>
+            <tr><th>Parâmetro</th><th>Valor</th><th>Faixa</th><th>Referência</th></tr>
+          </thead>
+          <tbody id="measures"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Coluna direita: coração 3D + achados -->
+    <section class="col right">
+      <div class="panel heart-panel">
+        <div class="heart-head">
+          <h2>Molde cardíaco 3D</h2>
+          <span class="hint">arraste para girar · role para aproximar</span>
+        </div>
+        <div id="heart-canvas" class="heart-canvas"></div>
+        <div class="legend">
+          <span><i class="dot atria"></i> Átrios (onda P)</span>
+          <span><i class="dot ventricle"></i> Ventrículos (QRS)</span>
+          <span><i class="dot spark"></i> Via de condução</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 id="rhythm-title" class="rhythm">—</h2>
+        <ul id="findings" class="findings"></ul>
+        <h3>Impressão diagnóstica</h3>
+        <p id="impression" class="impression"></p>
+        <div id="warnings" class="warnings"></div>
+        <p id="disclaimer" class="disclaimer"></p>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
