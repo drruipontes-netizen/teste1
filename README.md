@@ -26,15 +26,16 @@ sincronizado ao ritmo detectado no exame.
    severidade (OK / Atenção / Crítico). Cada achado traz a sua **repercussão
    clínica** e as **estruturas cardíacas envolvidas**, além de uma **análise
    combinada** que correlaciona os achados e descreve a repercussão global.
-5. **Molde cardíaco 3D animado** — coração completo (4 câmaras + septo + 4 valvas
-   + grandes vasos + sistema de condução: nó SA, nó AV, feixe de His, ramos e
-   Purkinje) que **bate no tempo do ECG** e **demonstra a alteração** sobre a
-   estrutura correspondente:
-   - onda **P** → contração dos **átrios** (ou fibrilação, na FA);
-   - complexo **QRS** → contração dos **ventrículos** (assíncrona no bloqueio de ramo);
+5. **Molde cardíaco 3D animado** — um **modelo anatômico real** (glTF/GLB, com
+   miocárdio texturizado, coronárias e grandes vasos) que **bate no tempo do ECG**
+   e **demonstra a alteração**:
+   - complexo **QRS** → sístole ventricular (leve compressão + "flush" do miocárdio);
+   - **fibrilação atrial** → tremor rápido e irregular do brilho;
+   - **supra de ST / isquemia** → pulsação avermelhada sustentada (sofrimento);
+   - **bloqueio de ramo** → contração ventricular atrasada;
    - marcador luminoso percorre **nó SA → nó AV → feixe de His → Purkinje**;
-   - **supra de ST** → parede do ventrículo esquerdo destacada (região em sofrimento);
-   - **rótulos** opcionais nomeiam cada estrutura sobre o modelo.
+   - **rótulos** opcionais nomeiam as regiões anatômicas.
+   - O modelo 3D vem do projeto open-source `interactive_3d` (MIT) — ver `NOTICE.md`.
 
 Toda a análise técnica aparece integrada à estrutura visual: tabela completa de
 medidas, achados com repercussão, análise combinada, painel com o **estado de
