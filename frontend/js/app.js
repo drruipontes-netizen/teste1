@@ -63,6 +63,17 @@ function wireControls() {
     b.addEventListener('click', () => loadDemo(b.dataset.demo));
   });
 
+  // Alternar tema claro/escuro.
+  const themeBtn = el('theme-btn');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const root = document.documentElement;
+      const cur = root.getAttribute('data-theme')
+        || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+    });
+  }
+
   // Alternar rótulos das estruturas no modelo 3D.
   let labelsOn = false;
   el('toggle-labels').addEventListener('click', () => {

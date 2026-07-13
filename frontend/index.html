@@ -26,13 +26,14 @@
       </div>
     </div>
     <div id="status" class="status info">Iniciando…</div>
+    <button id="theme-btn" class="theme-btn" title="Alternar tema claro/escuro" aria-label="Alternar tema">◐</button>
   </header>
 
   <main class="layout">
     <!-- Coluna esquerda: entrada + ECG + laudo -->
     <section class="col left">
       <div class="panel">
-        <h2>1 · Enviar ECG (foto ou PDF)</h2>
+        <h2><span class="n">1</span> Enviar ECG (foto ou PDF)</h2>
         <div id="dropzone" class="dropzone">
           <input id="file-input" type="file" accept="image/*,application/pdf" hidden />
           <div class="dz-inner">
@@ -53,9 +54,10 @@
       </div>
 
       <div class="panel">
-        <h2>2 · Traçado digitalizado</h2>
+        <h2><span class="n">2</span> Traçado digitalizado</h2>
         <div class="ecg-wrap">
           <canvas id="ecg-canvas"></canvas>
+          <span class="ecg-tag">II · 25 mm/s · 10 mm/mV</span>
         </div>
         <div class="playback">
           <button id="play-pause" class="btn">⏸ Pausar</button>
@@ -68,7 +70,7 @@
       </div>
 
       <div class="panel">
-        <h2>3 · Análise técnica</h2>
+        <h2><span class="n">3</span> Análise técnica</h2>
         <table class="measures">
           <thead>
             <tr><th>Parâmetro</th><th>Valor</th><th>Faixa</th><th>Referência</th></tr>

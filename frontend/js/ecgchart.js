@@ -37,17 +37,17 @@ export class EcgChart {
   _drawGrid() {
     const { ctx, w, h } = this;
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#160b0d';
+    ctx.fillStyle = '#0a0406';
     ctx.fillRect(0, 0, w, h);
-    // grade fina (1 mm) e grossa (5 mm)
+    // grade fina (1 mm) e grossa (5 mm) — papel milimetrado carmim
     const small = 8;
     ctx.lineWidth = 1;
     for (let x = 0; x <= w; x += small) {
-      ctx.strokeStyle = (x % (small * 5) === 0) ? 'rgba(224,90,80,0.30)' : 'rgba(224,90,80,0.12)';
+      ctx.strokeStyle = (x % (small * 5) === 0) ? 'rgba(226,72,60,0.26)' : 'rgba(226,72,60,0.10)';
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
     }
     for (let y = 0; y <= h; y += small) {
-      ctx.strokeStyle = (y % (small * 5) === 0) ? 'rgba(224,90,80,0.30)' : 'rgba(224,90,80,0.12)';
+      ctx.strokeStyle = (y % (small * 5) === 0) ? 'rgba(226,72,60,0.26)' : 'rgba(226,72,60,0.10)';
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
     }
   }
@@ -58,9 +58,12 @@ export class EcgChart {
   _drawTrace() {
     const { ctx } = this;
     if (this.samples.length < 2) return;
-    ctx.strokeStyle = '#5ef08a';
-    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = '#54e38e';
+    ctx.lineWidth = 2.2;
     ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(84,227,142,0.55)';
+    ctx.shadowBlur = 6;
     ctx.beginPath();
     for (let i = 0; i < this.samples.length; i++) {
       const x = this._x(i);
@@ -68,6 +71,7 @@ export class EcgChart {
       if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
     // Marca os picos R detectados.
     ctx.fillStyle = 'rgba(255,220,120,0.9)';
