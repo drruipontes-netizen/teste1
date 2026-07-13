@@ -234,11 +234,14 @@ def interpret(analysis: dict) -> dict:
     if st > 0.12:
         achados.append(_finding(
             "Supradesnivelamento de ST",
-            f"Elevação do segmento ST de ~{st*1000:.0f} µV — avaliar isquemia/lesão aguda com urgência.",
+            f"Elevação do segmento ST de ~{st*1000:.0f} µV — padrão de infarto agudo com supra de ST (IAMCSST). "
+            "Local afetado destacado no modelo 3D: parede anterior do ventrículo esquerdo (território da "
+            "artéria descendente anterior). Nota: a localização definitiva do território exige o ECG de 12 derivações.",
             SEV_CRIT,
-            repercussao="Sugere lesão miocárdica aguda (infarto com supra de ST). Uma região do músculo "
-                        "ventricular está sem fluxo sanguíneo adequado e em sofrimento — emergência médica.",
-            estruturas=["ventriculo_esquerdo", "aorta"],
+            repercussao="Uma região da parede ventricular está sem fluxo sanguíneo adequado (oclusão coronária) e "
+                        "em sofrimento isquêmico — o músculo daquela área contrai mal, reduzindo o bombeamento. "
+                        "É uma emergência tempo-dependente ('tempo é músculo').",
+            estruturas=["ventriculo_esquerdo", "ramo_esquerdo"],
         ))
         rhythm_anim = "st_elevation"
         mark(["ventriculo_esquerdo"], "isquemico", "Sofrimento/lesão da parede ventricular")

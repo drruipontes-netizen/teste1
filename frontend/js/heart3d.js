@@ -147,6 +147,29 @@ export class HeartModel {
       new THREE.MeshBasicMaterial({ color: 0xfff1b0 }));
     this.spark.visible = false;
     this.inner.add(this.spark);
+
+    // --- Zona de infarto: marca o LOCAL AFETADO na parede anterior do VE ---
+    // (território da artéria descendente anterior). Anel + mancha + rótulo fixo.
+    this.infarct = new THREE.Group();
+    this.infarct.position.set(-0.28, -0.42, 1.15); // parede anterior do VE (ântero-lateral)
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.36, 0.05, 14, 40),
+      new THREE.MeshBasicMaterial({ color: 0xff2a1e, transparent: true, opacity: 0.9 })
+    );
+    const patch = new THREE.Mesh(
+      new THREE.CircleGeometry(0.36, 40),
+      new THREE.MeshBasicMaterial({ color: 0xd11f12, transparent: true, opacity: 0.32, depthWrite: false })
+    );
+    patch.position.z = -0.01;
+    this.infarct.add(patch, ring);
+    this.infarct.visible = false;
+    this.inner.add(this.infarct);
+
+    // Rótulo do local afetado (sempre visível quando há isquemia).
+    this.infarctLabel = makeLabel('⚠ Infarto · parede anterior (VE)');
+    this.infarctLabel.visible = false;
+    this.infarctLabel.position.set(-0.05, 0.55, 1.2);
+    this.inner.add(this.infarctLabel);
   }
 
   setBeats(beats, duration, animation) {
@@ -158,7 +181,12 @@ export class HeartModel {
 
   setLabels(on) { this.showLabels = on; for (const l of this.labels) l.sprite.visible = on; }
 
-  _applyStructures(st) { this._struct = st || {}; }
+  _applyStructures(st) {
+    this._struct = st || {};
+    const isch = this._struct.lv_wall === 'ischemic';
+    if (this.infarct) this.infarct.visible = isch;
+    if (this.infarctLabel) this.infarctLabel.visible = isch;
+  }
 
   _activation(t) {
     let atrial = 0, ventric = 0, nearestQ = null, phase = 0;
@@ -205,6 +233,15 @@ export class HeartModel {
     // Marcador percorrendo a via de condução.
     if (sparkPhase !== null) { this.spark.visible = true; this.spark.position.copy(this._sparkPos(sparkPhase)); }
     else this.spark.visible = false;
+
+    // Zona de infarto pulsa (chama a atenção para o local afetado).
+    if (this.infarct && this.infarct.visible) {
+      const p = 0.5 + 0.5 * Math.sin(t * 3.4);
+      this.infarct.children[1].material.opacity = 0.55 + 0.45 * p; // anel
+      this.infarct.children[0].material.opacity = 0.22 + 0.20 * p; // mancha
+      const s = 1 + 0.07 * p;
+      this.infarct.scale.set(s, s, s);
+    }
 
     this.heart.rotation.y = Math.sin(t * 0.3) * 0.12;
 
