@@ -1,12 +1,15 @@
-// Orquestração do Cardio3D: upload/demo -> API -> gráfico ECG + coração 3D + laudo.
+// Orquestração do Cardio3D — 100% no navegador (sem backend):
+// demo/upload -> núcleo em JS (ecgcore) -> gráfico ECG + coração 3D + laudo.
 
 import { HeartModel } from './heart3d.js';
 import { EcgChart } from './ecgchart.js';
-
-// Se aberto via arquivo local, aponta para o servidor local; senão usa a mesma origem.
-const API_BASE = location.protocol === 'file:' ? 'http://localhost:8000' : '';
+import * as ecg from './ecgcore.js';
 
 const el = (id) => document.getElementById(id);
+const RHYTHM_NAME = {
+  sinus: 'Sinusal normal', bradycardia: 'Bradicardia', tachycardia: 'Taquicardia',
+  afib: 'Fibrilação atrial', pvc: 'Extrassístoles', st_elevation: 'Supra de ST',
+};
 
 // ----- Estado de reprodução (relógio virtual) -----
 const clock = {
@@ -103,29 +106,60 @@ function setStatus(msg, kind = 'info') {
   s.className = `status ${kind}`;
 }
 
-async function loadDemo(rhythm) {
-  setStatus('Gerando ECG de demonstração…', 'info');
+// Demonstração — gerada inteiramente no navegador.
+function loadDemo(rhythm) {
   try {
-    const r = await fetch(`${API_BASE}/api/demo?rhythm=${encodeURIComponent(rhythm)}`);
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    applyResult(await r.json());
-    setStatus(`Demonstração: ${rhythm}`, 'ok');
+    applyResult(ecg.demo(rhythm));
+    setStatus(`Demonstração: ${RHYTHM_NAME[rhythm] || rhythm}`, 'ok');
   } catch (err) {
-    setStatus(`Falha ao carregar demonstração (${err.message}). Verifique se o servidor está ativo.`, 'error');
+    setStatus(`Erro ao gerar demonstração: ${err.message}`, 'error');
   }
 }
 
+// Renderiza a primeira página de um PDF em um canvas (pdf.js vendorizado).
+async function pdfToImage(file) {
+  const pdfjs = await import('../vendor/pdfjs/pdf.mjs');
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdfjs/pdf.worker.mjs', import.meta.url).href;
+  const buf = await file.arrayBuffer();
+  const doc = await pdfjs.getDocument({ data: buf }).promise;
+  const page = await doc.getPage(1);
+  const viewport = page.getViewport({ scale: 2.4 }); // ~200 DPI
+  const cv = document.createElement('canvas');
+  cv.width = Math.floor(viewport.width); cv.height = Math.floor(viewport.height);
+  await page.render({ canvasContext: cv.getContext('2d'), viewport }).promise;
+  return cv;
+}
+
+// Upload — digitalização feita no próprio navegador (foto via canvas, PDF via pdf.js).
 async function uploadFile(file) {
   setStatus(`Processando "${file.name}"…`, 'info');
-  const fd = new FormData();
-  fd.append('file', file);
   try {
-    const r = await fetch(`${API_BASE}/api/analyze`, { method: 'POST', body: fd });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
-    applyResult(data);
-    const conf = Math.round((data.meta.confidence || 0) * 100);
-    setStatus(`Analisado: ${file.name} — confiança de digitalização ${conf}%`, conf < 40 ? 'warn' : 'ok');
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+    let dig;
+    if (isPdf) {
+      const canvas = await pdfToImage(file);
+      dig = ecg.digitizeImage(canvas);
+    } else {
+      const bmp = await createImageBitmap(file);
+      dig = ecg.digitizeImage(bmp);
+    }
+
+    // Fallback fisiológico se a digitalização não recuperar o traçado.
+    if (!dig || dig.confidence < 0.15 || dig.signal.length < dig.fs * 2) {
+      const syn = ecg.generate('sinus', 72, 10);
+      const warnings = [...(dig ? dig.notes : []),
+        'Não foi possível recuperar o traçado da imagem com segurança; exibindo um ritmo sinusal de referência para o molde 3D.'];
+      applyResult(ecg.buildResult(syn.signal, syn.fs, dig ? dig.confidence : 0,
+        { mode: 'fallback', filename: file.name, source: 'synthetic:sinus', confidence: dig ? dig.confidence : 0, warnings }));
+      setStatus(`Traçado não recuperado de "${file.name}" — exibindo referência`, 'warn');
+      return;
+    }
+
+    const meta = { mode: 'upload', filename: file.name, source: isPdf ? 'pdf' : 'image',
+      confidence: dig.confidence, px_per_mm: dig.px_per_mm, warnings: dig.notes };
+    applyResult(ecg.buildResult(dig.signal, dig.fs, dig.confidence, meta));
+    const conf = Math.round(dig.confidence * 100);
+    setStatus(`Analisado: ${file.name} — confiança ${conf}%`, conf < 40 ? 'warn' : 'ok');
   } catch (err) {
     setStatus(`Erro ao analisar arquivo: ${err.message}`, 'error');
   }

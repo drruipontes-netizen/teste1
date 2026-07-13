@@ -46,20 +46,30 @@ sobre o traçado.
 
 ## Como executar
 
-Requisitos: **Python 3.10+**. O frontend não precisa de build — o `three.js`
-está empacotado localmente (`frontend/vendor/`), então funciona **offline**.
+O app roda **100% no navegador** — toda a geração, análise, interpretação e a
+digitalização de foto/PDF acontecem em JavaScript. **Não é preciso backend nem
+instalar dependências**: basta servir a pasta `frontend/` como site estático
+(o `three.js` e o `pdf.js` estão empacotados localmente, então funciona offline).
 
 ```bash
-# 1. clonar e entrar no projeto
 cd teste1
+./run.sh                 # sobe um servidor estático (só Python stdlib) na porta 8000
+# depois abra: http://localhost:8000
+```
 
-# 2. subir o servidor (instala dependências na primeira vez)
-./run.sh
-#   ou manualmente:
-#   cd backend && pip install -r requirements.txt && uvicorn app:app --port 8000
+Qualquer servidor estático serve — por exemplo `npx serve frontend` ou
+publicar `frontend/` no GitHub Pages/Netlify. (Observação: sirva com o tipo MIME
+`text/javascript` para arquivos `.mjs`; o `run.sh` já faz isso.)
 
-# 3. abrir no navegador
-#   http://localhost:8000
+### Backend Python opcional (API)
+
+Há também um **backend FastAPI opcional** em `backend/` que expõe a mesma
+digitalização/análise via API (`/api/analyze`, `/api/demo`) usando OpenCV +
+PyMuPDF + SciPy — útil para integrações ou processamento em lote. O frontend
+**não depende** dele.
+
+```bash
+cd backend && pip install -r requirements.txt && uvicorn app:app --port 8000
 ```
 
 ---
@@ -77,14 +87,15 @@ teste1/
 │   │   ├── interpret.py       # medidas → ritmo, achados e laudo (pt-BR)
 │   │   └── synthetic.py       # ECG sintético (demo + fallback fisiológico)
 │   └── tests/test_pipeline.py # testes de ponta a ponta
-├── frontend/
+├── frontend/                  # app completo, roda no navegador (sem backend)
 │   ├── index.html
 │   ├── css/style.css
 │   ├── js/
-│   │   ├── app.js             # orquestração + relógio de reprodução
+│   │   ├── app.js             # orquestração + relógio de reprodução + upload
+│   │   ├── ecgcore.js         # núcleo em JS: gera, digitaliza, analisa e interpreta
 │   │   ├── heart3d.js         # coração 3D (three.js) sincronizado ao ritmo
 │   │   └── ecgchart.js        # traçado com grade e cursor
-│   └── vendor/three/          # three.js empacotado (offline)
+│   └── vendor/                # three.js, GLTFLoader, pdf.js e o modelo do coração (offline)
 ├── samples/                   # exemplos de ECG para teste
 └── run.sh
 ```
